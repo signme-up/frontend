@@ -5,6 +5,8 @@ import login from '@/components/login'
 import newEvent from '@/components/newEvent'
 import guest from '@/components/guest'
 
+
+
 Vue.use(Router)
 
 export default new Router({
@@ -13,21 +15,46 @@ export default new Router({
       path: '/',
       name: 'login',
       component: login
+      
     },
-    {
-      path: '/home',
-      name: 'HelloWorld',
-      component: HelloWorld
-  },
+    
   {
     path: '/event',
     name: 'newEvent',
-    component: newEvent
+    component: newEvent,
+    beforeEnter: (to, from, next) => {
+        const token = localStorage.getItem('token')
+        if (token) {
+            next()
+        }else {
+            swal({
+                title: 'Ooops',
+                text: `You don't Have Access! `,
+                icon: 'error',
+                button: 'OK'
+            })
+            next('/')
+        }
+    }
   },
   {
-    path: '/guest',
+    path: '/event/:eventId',
     name: 'guest',
-    component: guest
+    component: guest,
+    beforeEnter: (to, from, next) => {
+        const token = localStorage.getItem('token')
+        if (token) {
+            next()
+        }else {
+            this.$swal({
+                title: 'Ooops',
+                text: `You don't Have Access! `,
+                icon: 'error',
+                button: 'OK'
+            })
+            next('/')
+        }
+    }
   },
   
   ],

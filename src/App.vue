@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <appLogin v-if="!show"/>
+    
+    <!-- <appLogin v-if="!show"/> -->
     <router-view/>
   </div>
 </template>
