@@ -1,18 +1,18 @@
 <template lang="html">
   <div class="container">
-      <h3></h3>
+      <h3>{{errorMsg}}</h3>
       
-      <form v-on:submit="login">
+
           <div class="form-group">
             <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" v-model="userInfo.email">
           </div>
           <div class="form-group">
             <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password"v-model="userInfo.password">
           </div>
-          <input type="submit" value="Submit"> 
-      </form>
+
+      <button type="button" name="button" @click="login">Login</button>
       
   </div>
 </template>
@@ -23,27 +23,29 @@ export default {
         return{
             msg:'Welcome to Sign Me Up',
             errorMsg:"",
-            show:true
+            show:false,
+            userInfo:{
+                email : "",
+                password:""
+            }
             
         }
     },
     methods : {
         login(){
-            this.$http.post('/',{
-                email : req.body.email,
-                password : req.body.password
-            })
+            alert(this.userInfo)
+            this.$http.post('/auth/signin',this.userInfo)
             .then(response=>{
-                 
-                
+                 localStorage.setItem('token',token)
+                console.log(response);
                      this.$router.push('/event')
                  
                     
                  
             })
             .catch(err=>{
-                
-                this.errorMsg = err
+                console.error(err.data);
+                this.errorMsg = err.response.data.message
             })
         }
     }
