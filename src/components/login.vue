@@ -1,6 +1,9 @@
 <template lang="html">
   <div class="container">
-      <h3>{{errorMsg}}</h3>
+    <div class="">
+        <img src="../assets/logo.png">
+    </div>  
+
       
 
           <div class="form-group">
@@ -33,19 +36,28 @@ export default {
     },
     methods : {
         login(){
-            alert(this.userInfo)
+            // alert(this.userInfo)
             this.$http.post('/auth/signin',this.userInfo)
             .then(response=>{
-                 localStorage.setItem('token',token)
-                console.log(response);
+                // console.log(response.data);
+                 console.log(this.$router.route, '<-----')
+                localStorage.setItem('token',response.data.data.token)
+                 
+                // console.log(response.data.data.token);
                      this.$router.push('/event')
                  
                     
                  
             })
             .catch(err=>{
-                console.error(err.data);
-                this.errorMsg = err.response.data.message
+                console.error(err);
+                this.$swal({
+                    title: 'Ooops',
+                    text: err.response.data.message,
+                    icon: 'error',
+                    button: 'OK'
+                })
+                // this.errorMsg = err.response.data.message
             })
         }
     }

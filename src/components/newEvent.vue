@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="">
-      <h3 v-if="!status">{{msg}}</h3>
+      <!-- <h3 v-if="!status">{{msg}}</h3> -->
     <div class="container">
         <table class="table table-hover">
   <thead>
@@ -13,14 +13,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr v-for="a in acara">
-      <!-- <th scope="row">Default</th> -->
-      <td>{{a.name}}</td>
-      <td>{{a.startdate}}</td>
-      <td><img :src="a.logo" alt=""></td>
-      <td>{{a.description}}</td>
-      <td><router-link :to="{ name: 'guest', params: {eventId : a._id} }">Guestbook</router-link></td>
-    </tr>
+    <eventComp v-for="a in acara" :event='a'/>
   </tbody>
 </table> 
     </div>
@@ -45,21 +38,22 @@
                   <label for="exampleTextarea">Description</label>
                   <textarea class="form-control" id="exampleTextarea" rows="3" v-model="acarabaru.description"></textarea>
               </div>
-              <button type="button" name="button" @click="multer">Create</button>
+              <button class="button" type="button" name="button" @click="multer">Create</button>
               
           <br>
           <br>
-          <!-- <div class="container">
-              <button type="button" class="btn btn-primary btn-lg btn-block" @click="guestMode">Enter Guest Mode</button>
-          </div> -->
+
 
       </div>
       
-      
+      <div class="">
+         <a href="/" @click="logout">LogOut</a> 
+      </div>
     </div>
 </template>
 
 <script>
+import eventComp from './eventComp'
 export default {
     data(){
         return{
@@ -67,13 +61,17 @@ export default {
             status:true,
             acara:[],
             acarabaru : {
-                name: '',
-                startdate : '',
-                logo : '',
-                description : ''
-                
+            },
+            header: {headers:{
+                Authorization: "Bearer " + localStorage.getItem('token')
             }
+        },
+        show : true,
+        showEvent : true
         }
+    },
+    components : {
+        eventComp : eventComp
     },
     mounted: function(){
         this.getAcara()
@@ -92,8 +90,9 @@ export default {
             this.$http.post('/events',data)
             .then(response=>{
                 //reload
+                this.acarabaru = {}
                 console.log('hello2 berhasil');
-                location.ready()
+                
             })
             .catch(err=>{
                 console.log(err);
@@ -132,19 +131,24 @@ export default {
         },
         getAcara(){
             console.log('halo');
-            this.$http.get('/events')
+            this.$http.get('/events',this.header)
             .then(response=>{
                 // console.log(response.data.data);
                 this.acara = response.data.data
                 // console.log('................................',this.acara);
             })
             .catch(err=>{
+                console.log('===============================>',err);
                 console.log(err);
                 this.$router.push('/')
             })
         },
         guestMode(){
             this.$router.push('/guest')
+        },
+        logout(){
+            localStorage.removeItem('token')
+            this.$router.push('/')
         }
     }
 }
